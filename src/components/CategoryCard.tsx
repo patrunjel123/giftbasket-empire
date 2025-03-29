@@ -10,9 +10,9 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
   return (
     <Link 
       to={`/category/${category.slug}`} 
-      className="group block relative overflow-hidden rounded-lg shadow-md h-60 animate-fade-in"
+      className="group block relative overflow-hidden rounded-lg shadow-md aspect-square animate-fade-in transition-all duration-300 hover:shadow-lg"
     >
-      <div className="absolute inset-0 bg-black bg-opacity-40 group-hover:bg-opacity-30 transition-all duration-300 z-10" />
+      <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-10 transition-all duration-300 z-10" />
       
       <img 
         src={category.image} 
@@ -21,9 +21,9 @@ const CategoryCard = ({ category }: CategoryCardProps) => {
       />
       
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-20">
-        <h3 className="text-white text-xl font-bold mb-2 drop-shadow-md">{category.name}</h3>
+        <h3 className="text-white text-xl font-bold mb-2 drop-shadow-md group-hover:text-primary group-hover:scale-110 transition-all duration-300">{category.name}</h3>
         {category.description && (
-          <p className="text-white text-sm max-w-xs drop-shadow-md hidden md:block">
+          <p className="text-white text-sm max-w-xs drop-shadow-md hidden md:block group-hover:text-white/90">
             {category.description}
           </p>
         )}

@@ -17,6 +17,9 @@ export interface Product {
   allergens?: string[];
   nutritionalInfo?: string;
   deliveryInfo?: string;
+  brand?: string;
+  occasion?: string[];
+  type?: string;
 }
 
 export interface Category {
@@ -27,6 +30,7 @@ export interface Category {
   image?: string;
   parentId?: string;
   featured?: boolean;
+  count?: number;
 }
 
 export interface CartItem {
@@ -37,3 +41,10 @@ export interface CartItem {
 export interface WishlistItem {
   product: Product;
 }
+
+export interface FilterOption {
+  id: string;
+  name: string;
+  count: number;
+}
+
