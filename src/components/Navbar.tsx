@@ -1,7 +1,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Heart, Menu, X, ChevronDown, Search, User } from 'lucide-react';
+import { ShoppingCart, Heart, Menu, X, ChevronDown, ChevronRight, Search, User } from 'lucide-react';
 import { useStore } from '@/context/StoreContext';
 import { categories } from '@/data/products';
 import { Button } from '@/components/ui/button';
@@ -15,11 +15,17 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const { cartItemsCount } = useStore();
   const isMobile = useIsMobile();
   const navRef = useRef<HTMLDivElement>(null);
@@ -38,6 +44,10 @@ const Navbar = () => {
 
   const closeMegaMenu = () => {
     setMegaMenuOpen(false);
+  };
+
+  const handleCategoryToggle = (categoryId: string) => {
+    setExpandedCategory(expandedCategory === categoryId ? null : categoryId);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -234,34 +244,63 @@ const Navbar = () => {
                 Oferte
               </Link>
               
+              {/* Categories with collapsible subcategories */}
               {mainCategories.map((category) => {
                 const subCategories = categories.filter(cat => cat.parentId === category.id);
                 
                 return (
-                  <div key={category.id} className="py-1">
-                    <Link
-                      to={`/category/${category.slug}`}
-                      className="text-lg font-medium text-charcoal hover:text-burgundy"
-                      onClick={toggleMobileMenu}
-                    >
-                      {category.name}
-                    </Link>
+                  <Collapsible 
+                    key={category.id} 
+                    open={expandedCategory === category.id}
+                    onOpenChange={() => handleCategoryToggle(category.id)}
+                    className="py-1"
+                  >
+                    <div className="flex items-center justify-between">
+                      <Link
+                        to={`/category/${category.slug}`}
+                        className="text-lg font-medium text-charcoal hover:text-burgundy py-1"
+                        onClick={(e) => {
+                          if (subCategories.length > 0) {
+                            e.preventDefault();
+                            handleCategoryToggle(category.id);
+                          } else {
+                            toggleMobileMenu();
+                          }
+                        }}
+                      >
+                        {category.name}
+                      </Link>
+                      
+                      {subCategories.length > 0 && (
+                        <CollapsibleTrigger asChild>
+                          <button className="p-1 text-gray-500 hover:text-burgundy">
+                            {expandedCategory === category.id ? (
+                              <ChevronDown className="h-5 w-5" />
+                            ) : (
+                              <ChevronRight className="h-5 w-5" />
+                            )}
+                          </button>
+                        </CollapsibleTrigger>
+                      )}
+                    </div>
                     
                     {subCategories.length > 0 && (
-                      <div className="ml-4 mt-2 flex flex-col space-y-2">
-                        {subCategories.map((subCategory) => (
-                          <Link
-                            key={subCategory.id}
-                            to={`/category/${subCategory.slug}`}
-                            className="text-gray-700 hover:text-burgundy"
-                            onClick={toggleMobileMenu}
-                          >
-                            {subCategory.name}
-                          </Link>
-                        ))}
-                      </div>
+                      <CollapsibleContent>
+                        <div className="ml-4 mt-2 flex flex-col space-y-2">
+                          {subCategories.map((subCategory) => (
+                            <Link
+                              key={subCategory.id}
+                              to={`/category/${subCategory.slug}`}
+                              className="text-gray-700 hover:text-burgundy py-1"
+                              onClick={toggleMobileMenu}
+                            >
+                              {subCategory.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
                     )}
-                  </div>
+                  </Collapsible>
                 );
               })}
               
